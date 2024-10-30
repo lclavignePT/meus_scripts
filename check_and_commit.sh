@@ -31,7 +31,7 @@ check_and_commit() {
 }
 
 # Entrar na pasta workspace
-cd ~/dados/workspace || exit
+cd ~/Dev || exit
 
 # Chamada inicial da função
 check_and_commit "$(pwd)"
