@@ -7,8 +7,8 @@ if [[ -z "$1" ]]; then
     exit 1
 fi
 
-# Caminho do projeto
-project_path="$1"
+# Captura o caminho completo
+project_path="$(realpath "$1")"
 
 # Verificar se a pasta existe; se não, criar a pasta
 if [[ -d "$project_path" ]]; then
@@ -173,10 +173,18 @@ create_virtualenv() {
             pipenv --python "$(python3 --version | awk '{print $2}')"
             ;;
         4)
-            pip install poetry
-            poetry init --no-interaction
-            poetry install
-            ;;
+            # Configurar o Python local com pyenv
+    pyenv local "$python_version"  # Define a versão do Python escolhida
+    export PATH="$(pyenv root)/shims:$PATH"  # Configura temporariamente o PATH do pyenv para incluir o poetry
+
+    if ! command -v poetry &>/dev/null; then
+        echo "Instalando poetry..."
+        pip install poetry
+    fi
+
+    poetry init --no-interaction
+    poetry install --no-root
+    ;;
         5)
             version_menu
             return
@@ -322,5 +330,12 @@ env_menu() {
 # Executar o menu principal
 main_menu
 
-# Garantir que o script finaliza no diretório do projeto
+# Garantir que o script finaliza no diretório do projeto, mas verifique se o diretório existe primeiro
+if [[ -d "$project_path" ]]; then
+    cd "$project_path" || exit
+else
+    echo "Erro: O diretório do projeto não foi encontrado em '$project_path'."
+    exit 1
+fi
+
 exec $SHELL
