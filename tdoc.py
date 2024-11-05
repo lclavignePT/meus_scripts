@@ -31,7 +31,7 @@ def gerar_documentacao(saida_tree, arquivos_documentados, caminho_diretorio):
     # Extrai o nome do diretório pai e gera um timestamp
     nome_diretorio = os.path.basename(os.path.normpath(caminho_diretorio))
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    nome_txt = f"documentacao_projeto_{nome_diretorio}_{timestamp}.txt"
+    nome_txt = f"{nome_diretorio}_{timestamp}.txt"
 
     # Cria o arquivo de documentação
     with open(nome_txt, "w", encoding="utf-8") as file:
