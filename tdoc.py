@@ -6,14 +6,19 @@ import sys
 from datetime import datetime
 
 def executar_comando_tree(caminho_diretorio):
-    # Executa o comando tree sem cores, organiza diretórios primeiro no caminho especificado
-    comando = f"tree -n --dirsfirst {caminho_diretorio}"
+    # Executa o comando tree sem cores, organiza diretórios primeiro no caminho especificado,
+    # e exclui pastas .venv, venv, node_modules
+    comando = f"tree -n --dirsfirst {caminho_diretorio} -I '.venv|venv|node_modules'"
     resultado = subprocess.run(comando, shell=True, text=True, capture_output=True)
     return resultado.stdout
 
 def encontrar_arquivos(caminho_diretorio, extensoes):
     arquivos_encontrados = []
+    pastas_excluidas = {'.venv', 'venv', 'node_modules'}
+    
     for root, dirs, files in os.walk(caminho_diretorio):
+        # Remove pastas excluídas da lista de diretórios que serão percorridos
+        dirs[:] = [d for d in dirs if d not in pastas_excluidas]
         for file in files:
             # Inclui arquivos Dockerfile (com ou sem extensões) e arquivos com as extensões desejadas
             if file == "Dockerfile" or file.startswith("Dockerfile.") or any(file.endswith(ext) for ext in extensoes):
